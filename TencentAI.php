@@ -1,7 +1,7 @@
-﻿<?php
+<?php
 //error_reporting(0);
  /**
- *	腾讯AI PHP, 十个功能完整调用例子
+ *	腾讯AI PHP, 十三个功能完整调用例子
  *	填入ID和key上传到服务器就能食用了
  *	调用参数 wd= type= id=
  *	wd为上传的text，或者图片的base64代码，建议用post提交给本php
@@ -11,26 +11,26 @@
  *	@Author: fornow <QQ313397677>
  *	@非官方，仅供参考
  *	@link http://heartdream.cn
- *	@version 0.2
+ *	@version 0.3
  */
 header("Content-Type: application/json; charset=utf-8");
 if(is_array($_REQUEST)&&count($_REQUEST)>0){ //先判断是否传值了
 if(isset($_REQUEST["wd"])){//是否存在"wd"的参数
-$word=$_REQUEST["wd"];//存在
+$word=$_REQUEST["wd"];
 }else{
- echo "非法调用！";//没有输入需要搜索的内容
+ echo "非法调用！";
  exit();}
 if(isset($_REQUEST["type"])){//是否存在"type"的参数
-$type=$_REQUEST["type"];//存在
+$type=$_REQUEST["type"];
 }else{
 $type='1';}//如果没有输入type那么就是1，输入的话就不管咯！
 }
-if(isset($_REQUEST["id"])){//是否存在"机器人QQ"的参数
-$id=$_REQUEST["id"];//存在
+if(isset($_REQUEST["id"])){//是否存在"id"的参数
+$id=$_REQUEST["id"];
 }else{
-$id=10000;//没有输入需要搜索的内容
+$id=10000;
 }
-if($word==''){//如果没内容
+if($word==''){
 echo '我需要一个目标';
 exit();
 }
@@ -189,6 +189,50 @@ $arr = json_decode($resp);
 echo "失败！";
 }else{
 echo '可能颜龄为：' . $arr->data->image;
+}}
+if($type==11){//AL翻译自动识别中英互转
+$str1 = "app_id={$appid}&nonce_str={$nonce_str}&text={$keyword}&time_stamp={$timestamp}&type=0";
+$str=$str1."&app_key={$app_key}";
+$str= md5($str);
+$sign=strtoupper($str);
+$data=$str1."&sign={$sign}";
+$url="https://api.ai.qq.com/fcgi-bin/nlp/nlp_texttrans";
+$resp=post($url,$data);
+$arr = json_decode($resp);
+	if($arr->data->trans_text==''){
+echo "失败！";
+}else{
+echo $arr->data->trans_text;
+}}
+if($type==12){//翻译君，目标中文
+$str1 = "app_id={$appid}&nonce_str={$nonce_str}&source=auto&target=zh&text={$keyword}&time_stamp={$timestamp}";
+$str=$str1."&app_key={$app_key}";
+$str= md5($str);
+$sign=strtoupper($str);
+$data=$str1."&sign={$sign}";
+$url="https://api.ai.qq.com/fcgi-bin/nlp/nlp_texttranslate";
+$resp=post($url,$data);
+$arr = json_decode($resp);
+$target_text = new StdClass();
+	if($arr->data->target_text==''){
+echo "失败！";
+}else{
+echo $arr->data->target_text;
+}}
+if($type==13){//翻译君，目标英文
+$str1 = "app_id={$appid}&nonce_str={$nonce_str}&source=auto&target=en&text={$keyword}&time_stamp={$timestamp}";
+$str=$str1."&app_key={$app_key}";
+$str= md5($str);
+$sign=strtoupper($str);
+$data=$str1."&sign={$sign}";
+$url="https://api.ai.qq.com/fcgi-bin/nlp/nlp_texttranslate";
+$resp=post($url,$data);
+$arr = json_decode($resp);
+$target_text = new StdClass();
+	if($arr->data->target_text==''){
+echo "失败！";
+}else{
+echo $arr->data->target_text;
 }}
 function get($url){//带超时的，get访问
 $opts = array( 
